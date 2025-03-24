@@ -21,7 +21,6 @@
         height: 100vh;
         margin: 0;
         background: linear-gradient(to bottom right, #9933ff, #6600cc);
-        /* background-image: url('https://cdnjs.cloudflare.com/ajax/libs/noise-generator/1.0.0/background-noise.png'); */
         user-select: none;
         overflow: hidden;
       }
@@ -49,9 +48,7 @@
       .title {
         font-size: clamp(24px, 7vw, 32px);
         font-weight: bold;
-        color: #000000;
-        text-shadow: 2px 2px 0px #f9f6f2;
-        /* transform: rotate(-2deg); */
+        color: #ffffff;
         letter-spacing: 1px;
       }
 
@@ -63,7 +60,6 @@
         font-size: clamp(16px, 5vw, 20px);
         font-weight: bold;
         text-shadow: 1px 1px 0px #000;
-        /* transform: rotate(2deg); */
         letter-spacing: 1px;
       }
 
@@ -142,7 +138,7 @@
       .controls-info {
         margin-top: 15px;
         font-size: clamp(12px, 3vw, 16px);
-        color: #000000;
+        color: #ffffff;
         text-transform: uppercase;
         letter-spacing: 1px;
       }
@@ -231,6 +227,38 @@
         animation: wow 0.6s ease-out;
       }
 
+      /* New direction indicator style */
+      .direction-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80px;
+        height: 80px;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 6;
+      }
+
+      .direction-animation {
+        animation: showDirection 0.5s ease-out;
+      }
+
+      @keyframes showDirection {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.5);
+        }
+        50% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.2);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(1.5);
+        }
+      }
+
       @keyframes wow {
         0% {
           opacity: 1;
@@ -288,6 +316,7 @@
       </div>
 
       <div class="wow-effect" id="wowEffect">WOW!</div>
+      <div class="direction-indicator" id="directionIndicator"></div>
     </div>
 
     <script>
@@ -302,6 +331,7 @@
           this.gameOverOverlay = document.getElementById("gameOverOverlay");
           this.restartBtn = document.getElementById("restartBtn");
           this.wowEffect = document.getElementById("wowEffect");
+          this.directionIndicator = document.getElementById("directionIndicator");
           this.score = 0;
           this.memeExpressions = [
             "WOW!",
@@ -326,6 +356,14 @@
             512: "img/512.png",
             1024: "img/1024.png",
             2048: "img/2048.png",
+          };
+          
+          // Direction control images
+          this.directionImages = {
+            up: "img/up.png",
+            down: "img/down.png",
+            left: "img/left.png",
+            right: "img/right.png"
           };
 
           // Use images by default
@@ -471,6 +509,27 @@
           }
         }
 
+        // Show direction indicator
+        showDirectionIndicator(direction) {
+          // Create an image element with the appropriate direction image
+          this.directionIndicator.innerHTML = "";
+          const img = document.createElement("img");
+          img.src = this.directionImages[direction];
+          img.alt = direction;
+          img.style.width = "100%";
+          img.style.height = "100%";
+          this.directionIndicator.appendChild(img);
+          
+          // Remove any existing animation class
+          this.directionIndicator.classList.remove("direction-animation");
+          
+          // Force reflow
+          void this.directionIndicator.offsetWidth;
+          
+          // Add animation class
+          this.directionIndicator.classList.add("direction-animation");
+        }
+
         move(direction) {
           let moved = false;
           let newGrid = JSON.parse(JSON.stringify(this.grid));
@@ -526,6 +585,9 @@
           }
 
           if (moved) {
+            // Show direction indicator
+            this.showDirectionIndicator(direction);
+            
             this.grid = newGrid;
             this.score += scoreIncrease;
             this.addRandomTile();
