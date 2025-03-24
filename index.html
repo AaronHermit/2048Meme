@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2048 Game with Images and Score</title>
+    <title>2048 MEME EDITION</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             background-color: #faf8ef;
+            background-image: url('https://cdnjs.cloudflare.com/ajax/libs/noise-generator/1.0.0/background-noise.png');
             user-select: none;
+            overflow: hidden;
         }
 
         .game-container {
@@ -22,15 +24,37 @@
             border-radius: 10px;
             text-align: center;
             width: 95%;
-            max-width: 500px; /* Maximum width for larger screens */
+            max-width: 500px;
             margin: 0 auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: clamp(24px, 7vw, 32px);
+            font-weight: bold;
+            color: #776e65;
+            text-shadow: 2px 2px 0px #f9f6f2;
+            transform: rotate(-2deg);
         }
 
         .score-container {
-            margin-bottom: 15px;
-            font-size: clamp(18px, 5vw, 24px);
+            background-color: #8f7a66;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: clamp(16px, 5vw, 20px);
             font-weight: bold;
-            color: #776e65;
+            text-shadow: 1px 1px 0px #000;
+            transform: rotate(2deg);
         }
 
         .grid {
@@ -39,29 +63,56 @@
             grid-gap: 2%;
             background-color: #bbada0;
             width: 100%;
-            aspect-ratio: 1/1; /* Keep the grid square */
+            aspect-ratio: 1/1;
+            position: relative;
         }
 
         .tile {
             width: 100%;
-            aspect-ratio: 1/1; /* Keep tiles square */
+            aspect-ratio: 1/1;
             background-color: #cdc1b4;
             border-radius: 5px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: clamp(16px, 5vw, 40px);
-            transition: all 0.1s ease-in-out;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
         }
 
         .tile:not(:empty) {
             background-color: #eee4da;
         }
 
+        .tile.merged {
+            animation: pop 0.3s ease-in-out;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.95); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(0.95); }
+        }
+
         .tile img {
             width: 100%;
             height: 100%;
-            object-fit: fill;
+            object-fit: contain;
+            border-radius: 5px;
+            transform: scale(0.95);
+            transition: all 0.2s;
+        }
+
+        .tile.merged img {
+            animation: imgPop 0.3s ease-in-out;
+        }
+
+        @keyframes imgPop {
+            0% { transform: scale(0.95); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(0.95); }
         }
 
         .controls-info {
@@ -70,12 +121,92 @@
             color: #776e65;
         }
 
+        .restart-btn {
+            background-color: #8f7a66;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: clamp(14px, 4vw, 18px);
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            transition: all 0.2s;
+        }
+
+        .restart-btn:hover {
+            background-color: #9f8a76;
+            transform: scale(1.05);
+        }
+
+        .game-over-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(238, 228, 218, 0.73);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            display: none;
+        }
+
+        .game-over-message {
+            font-size: clamp(24px, 8vw, 40px);
+            font-weight: bold;
+            color: #776e65;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0px #f9f6f2;
+            transform: rotate(-5deg);
+        }
+
+        .floating-meme {
+            position: absolute;
+            z-index: -1;
+            opacity: 0.2;
+            pointer-events: none;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-100px, -100px) rotate(0deg); }
+            100% { transform: translate(100vw, 100vh) rotate(360deg); }
+        }
+
+        .wow-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(30px, 10vw, 60px);
+            font-weight: bold;
+            color: #f65e3b;
+            text-shadow: 2px 2px 0px #fff, -2px -2px 0px #000;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .wow-animation {
+            animation: wow 0.6s ease-out;
+        }
+
+        @keyframes wow {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+        }
+
         @media (max-height: 600px) {
             .game-container {
                 padding: 10px;
             }
             
-            .score-container {
+            .header {
                 margin-bottom: 10px;
             }
             
@@ -97,9 +228,21 @@
 </head>
 <body>
     <div class="game-container">
-        <div class="score-container" id="score">Score: 0</div>
+        <div class="header">
+            <div class="title">2048 MEME</div>
+            <div class="score-container" id="score">0</div>
+        </div>
         <div class="grid" id="gameGrid"></div>
         <div class="controls-info">Use arrow keys or swipe to play</div>
+        <button class="restart-btn" id="restartBtn">Restart Game</button>
+        
+        <div class="game-over-overlay" id="gameOverOverlay">
+            <div class="game-over-message">GAME OVER!</div>
+            <div class="score-container" id="finalScore">Score: 0</div>
+            <button class="restart-btn">Try Again!</button>
+        </div>
+        
+        <div class="wow-effect" id="wowEffect">WOW!</div>
     </div>
 
     <script>
@@ -108,7 +251,13 @@
                 this.grid = Array(4).fill().map(() => Array(4).fill(0));
                 this.gridElement = document.getElementById('gameGrid');
                 this.scoreElement = document.getElementById('score');
+                this.finalScoreElement = document.getElementById('finalScore');
+                this.gameOverOverlay = document.getElementById('gameOverOverlay');
+                this.restartBtn = document.getElementById('restartBtn');
+                this.wowEffect = document.getElementById('wowEffect');
                 this.score = 0;
+                this.memeExpressions = ["WOW!", "SUCH MERGE!", "VERY TILES!", "AMAZING!", "SO GOOD!", "EPIC!", "NOICE!"];
+                
                 this.tileImages = {
                     0: '',
                     2: 'img/2.png',
@@ -124,7 +273,7 @@
                     2048: 'img/2048.png'
                 };
                 
-                // Check if images load correctly, otherwise use text fallback
+                // Use images by default
                 this.useTextFallback = false;
                 this.checkImages();
                 
@@ -133,6 +282,11 @@
                 this.addRandomTile();
                 this.updateDisplay();
                 this.setupControls();
+                this.addFloatingMemes();
+                
+                // Setup restart button
+                this.restartBtn.addEventListener('click', () => this.restart());
+                document.querySelector('.game-over-overlay .restart-btn').addEventListener('click', () => this.restart());
                 
                 // Handle orientation changes
                 window.addEventListener('resize', () => {
@@ -147,6 +301,30 @@
                     this.updateDisplay();
                 };
                 testImage.src = this.tileImages[2];
+            }
+            
+            restart() {
+                this.grid = Array(4).fill().map(() => Array(4).fill(0));
+                this.score = 0;
+                this.addRandomTile();
+                this.addRandomTile();
+                this.updateDisplay();
+                this.gameOverOverlay.style.display = 'none';
+            }
+            
+            addFloatingMemes() {
+                const memes = ['😂', '🤣', '😎', '🔥', '💯', '👌', '🚀'];
+                for (let i = 0; i < 5; i++) {
+                    const meme = document.createElement('div');
+                    meme.className = 'floating-meme';
+                    meme.textContent = memes[Math.floor(Math.random() * memes.length)];
+                    meme.style.fontSize = `${Math.random() * 30 + 20}px`;
+                    meme.style.left = `${Math.random() * 100}vw`;
+                    meme.style.top = `${Math.random() * 100}vh`;
+                    meme.style.animationDuration = `${Math.random() * 20 + 10}s`;
+                    meme.style.animationDelay = `${Math.random() * 5}s`;
+                    document.body.appendChild(meme);
+                }
             }
 
             initGrid() {
@@ -169,17 +347,18 @@
                         
                         if (value) {
                             if (this.useTextFallback) {
-                                // Text fallback if images fail to load
+                                // Text fallback with meme styling
                                 tile.textContent = value;
                                 
                                 // Apply background color based on value
                                 const power = Math.log2(value);
-                                const hue = 30 - power * 5;
+                                const hue = (power * 20) % 360;
                                 const lightness = 90 - power * 5;
-                                tile.style.backgroundColor = `hsl(${hue}, 80%, ${lightness}%)`;
+                                tile.style.backgroundColor = `hsl(${hue}, 90%, ${lightness}%)`;
                                 
                                 // Adjust text color for readability
                                 tile.style.color = power > 5 ? '#f9f6f2' : '#776e65';
+                                tile.style.textShadow = power > 5 ? '1px 1px 0px #000' : 'none';
                                 
                                 // Adjust font size for larger numbers
                                 if (value >= 1000) {
@@ -189,19 +368,27 @@
                                 } else {
                                     tile.style.fontSize = 'clamp(16px, 5vw, 40px)';
                                 }
+                                
+                                // Add random rotation for meme effect
+                                tile.style.transform = `scale(0.95) rotate(${(value % 5) - 2}deg)`;
                             } else {
                                 // Image-based tiles
                                 const img = document.createElement('img');
                                 img.src = this.tileImages[value];
                                 img.alt = value.toString();
+                                
+                                // Add slight random rotation for meme effect
+                                img.style.transform = `scale(0.95) rotate(${(value % 5) - 2}deg)`;
+                                
                                 tile.appendChild(img);
                             }
                         } else {
                             tile.style.backgroundColor = '#cdc1b4';
+                            tile.style.transform = 'scale(1)';
                         }
                     }
                 }
-                this.scoreElement.textContent = `Score: ${this.score}`;
+                this.scoreElement.textContent = this.score;
             }
 
             addRandomTile() {
@@ -223,6 +410,7 @@
                 let moved = false;
                 let newGrid = JSON.parse(JSON.stringify(this.grid));
                 let scoreIncrease = 0;
+                let merges = [];
 
                 if (direction === 'up' || direction === 'down') {
                     for (let j = 0; j < 4; j++) {
@@ -231,8 +419,18 @@
                             column.push(newGrid[i][j]);
                         }
                         if (direction === 'down') column.reverse();
-                        const [merged, points] = this.merge(column);
+                        const [merged, points, mergePositions] = this.merge(column);
                         scoreIncrease += points;
+                        
+                        // Track merges
+                        if (mergePositions.length > 0) {
+                            for (const pos of mergePositions) {
+                                let actualPos = pos;
+                                if (direction === 'down') actualPos = 3 - pos;
+                                merges.push({i: actualPos, j});
+                            }
+                        }
+                        
                         if (direction === 'down') merged.reverse();
                         for (let i = 0; i < 4; i++) {
                             if (newGrid[i][j] !== merged[i]) moved = true;
@@ -243,8 +441,18 @@
                     for (let i = 0; i < 4; i++) {
                         let row = newGrid[i].slice();
                         if (direction === 'right') row.reverse();
-                        const [merged, points] = this.merge(row);
+                        const [merged, points, mergePositions] = this.merge(row);
                         scoreIncrease += points;
+                        
+                        // Track merges
+                        if (mergePositions.length > 0) {
+                            for (const pos of mergePositions) {
+                                let actualPos = pos;
+                                if (direction === 'right') actualPos = 3 - pos;
+                                merges.push({i, j: actualPos});
+                            }
+                        }
+                        
                         if (direction === 'right') merged.reverse();
                         if (merged.some((val, idx) => val !== newGrid[i][idx])) moved = true;
                         newGrid[i] = merged;
@@ -257,29 +465,61 @@
                     this.addRandomTile();
                     this.updateDisplay();
                     
+                    // Apply merge animations
+                    if (merges.length > 0) {
+                        const tiles = document.querySelectorAll('.tile');
+                        for (const {i, j} of merges) {
+                            const tile = tiles[i * 4 + j];
+                            tile.classList.add('merged');
+                            setTimeout(() => {
+                                tile.classList.remove('merged');
+                            }, 300);
+                        }
+                        
+                        // Show WOW effect for big merges
+                        if (scoreIncrease >= 16) {
+                            this.showWowEffect();
+                        }
+                    }
+                    
                     // Check for game over
                     if (this.isGameOver()) {
-                        setTimeout(() => {
-                            alert(`Game Over! Your score: ${this.score}`);
-                        }, 300);
+                        this.showGameOver();
                     }
                 }
+            }
+            
+            showWowEffect() {
+                const randomExpression = this.memeExpressions[Math.floor(Math.random() * this.memeExpressions.length)];
+                this.wowEffect.textContent = randomExpression;
+                this.wowEffect.classList.remove('wow-animation');
+                // Force reflow
+                void this.wowEffect.offsetWidth;
+                this.wowEffect.classList.add('wow-animation');
+            }
+            
+            showGameOver() {
+                this.finalScoreElement.textContent = `Final Score: ${this.score}`;
+                this.gameOverOverlay.style.display = 'flex';
             }
 
             merge(line) {
                 let result = line.filter(x => x);
                 let points = 0;
+                let mergePositions = [];
+                
                 for (let i = 0; i < result.length - 1; i++) {
                     if (result[i] === result[i + 1]) {
                         result[i] *= 2;
                         points += result[i];
+                        mergePositions.push(i);
                         result[i + 1] = 0;
                         i++;
                     }
                 }
                 result = result.filter(x => x);
                 while (result.length < 4) result.push(0);
-                return [result, points];
+                return [result, points, mergePositions];
             }
             
             isGameOver() {
