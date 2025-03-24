@@ -5,8 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2048 MEME EDITION</title>
     <style>
+        @font-face {
+            font-family: 'Impact';
+            src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/impact.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-family: 'Impact', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -44,6 +51,7 @@
             color: #776e65;
             text-shadow: 2px 2px 0px #f9f6f2;
             transform: rotate(-2deg);
+            letter-spacing: 1px;
         }
 
         .score-container {
@@ -55,6 +63,7 @@
             font-weight: bold;
             text-shadow: 1px 1px 0px #000;
             transform: rotate(2deg);
+            letter-spacing: 1px;
         }
 
         .grid {
@@ -76,6 +85,8 @@
             justify-content: center;
             align-items: center;
             font-size: clamp(16px, 5vw, 40px);
+            font-family: 'Impact', sans-serif;
+            letter-spacing: 1px;
             transition: all 0.2s ease-in-out;
             position: relative;
             overflow: hidden;
@@ -119,6 +130,8 @@
             margin-top: 15px;
             font-size: clamp(12px, 3vw, 16px);
             color: #776e65;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .restart-btn {
@@ -131,7 +144,9 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-family: 'Impact', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             transition: all 0.2s;
         }
 
@@ -162,6 +177,8 @@
             margin-bottom: 20px;
             text-shadow: 2px 2px 0px #f9f6f2;
             transform: rotate(-5deg);
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
         .floating-meme {
@@ -189,6 +206,8 @@
             opacity: 0;
             pointer-events: none;
             z-index: 5;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .wow-animation {
