@@ -10,26 +10,25 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
             background-color: #faf8ef;
             user-select: none;
-            overflow: hidden;
         }
 
         .game-container {
             background-color: #bbada0;
-            padding: 2vw;
-            border-radius: 1vw;
+            padding: 15px;
+            border-radius: 10px;
             text-align: center;
-            width: 90vw;
-            max-width: 500px;
-            box-sizing: border-box;
+            width: 95%;
+            max-width: 500px; /* Maximum width for larger screens */
+            margin: 0 auto;
         }
 
         .score-container {
-            margin-bottom: 2vw;
-            font-size: clamp(16px, 4vw, 24px);
+            margin-bottom: 15px;
+            font-size: clamp(18px, 5vw, 24px);
             font-weight: bold;
             color: #776e65;
         }
@@ -37,69 +36,61 @@
         .grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            grid-gap: 2vw;
+            grid-gap: 2%;
             background-color: #bbada0;
             width: 100%;
-            aspect-ratio: 1 / 1;
+            aspect-ratio: 1/1; /* Keep the grid square */
         }
 
         .tile {
+            width: 100%;
+            aspect-ratio: 1/1; /* Keep tiles square */
             background-color: #cdc1b4;
-            border-radius: 10%; /* Increased for more noticeable rounding */
+            border-radius: 5px;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: clamp(16px, 5vw, 40px);
             transition: all 0.1s ease-in-out;
-            aspect-ratio: 1 / 1;
-            overflow: hidden; /* Ensures image corners match tile corners */
-            position: relative; /* For better control over child elements */
         }
 
         .tile:not(:empty) {
-            background-color: transparent; /* Remove background when tile has an image */
+            background-color: #eee4da;
         }
 
         .tile img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            border-radius: 10%; /* Match the tile's border-radius */
+            object-fit: fill;
         }
 
-        @media (max-width: 600px) {
+        .controls-info {
+            margin-top: 15px;
+            font-size: clamp(12px, 3vw, 16px);
+            color: #776e65;
+        }
+
+        @media (max-height: 600px) {
             .game-container {
-                padding: 3vw;
-                width: 95vw;
+                padding: 10px;
             }
-
+            
+            .score-container {
+                margin-bottom: 10px;
+            }
+            
             .grid {
-                grid-gap: 1.5vw;
-            }
-
-            .tile {
-                border-radius: 8%;
-            }
-
-            .tile img {
-                border-radius: 8%;
+                grid-gap: 1.5%;
             }
         }
 
-        @media (max-width: 400px) {
+        @media (max-width: 350px) {
             .game-container {
-                padding: 2vw;
+                padding: 8px;
             }
-
+            
             .grid {
-                grid-gap: 1vw;
-            }
-
-            .tile {
-                border-radius: 6%;
-            }
-
-            .tile img {
-                border-radius: 6%;
+                grid-gap: 1%;
             }
         }
     </style>
@@ -108,6 +99,7 @@
     <div class="game-container">
         <div class="score-container" id="score">Score: 0</div>
         <div class="grid" id="gameGrid"></div>
+        <div class="controls-info">Use arrow keys or swipe to play</div>
     </div>
 
     <script>
@@ -131,11 +123,30 @@
                     1024: 'img/1024.png',
                     2048: 'img/2048.png'
                 };
+                
+                // Check if images load correctly, otherwise use text fallback
+                this.useTextFallback = false;
+                this.checkImages();
+                
                 this.initGrid();
                 this.addRandomTile();
                 this.addRandomTile();
                 this.updateDisplay();
                 this.setupControls();
+                
+                // Handle orientation changes
+                window.addEventListener('resize', () => {
+                    this.updateDisplay();
+                });
+            }
+            
+            checkImages() {
+                const testImage = new Image();
+                testImage.onerror = () => {
+                    this.useTextFallback = true;
+                    this.updateDisplay();
+                };
+                testImage.src = this.tileImages[2];
             }
 
             initGrid() {
@@ -155,10 +166,38 @@
                         const tile = tiles[i * 4 + j];
                         const value = this.grid[i][j];
                         tile.innerHTML = '';
+                        
                         if (value) {
-                            const img = document.createElement('img');
-                            img.src = this.tileImages[value];
-                            tile.appendChild(img);
+                            if (this.useTextFallback) {
+                                // Text fallback if images fail to load
+                                tile.textContent = value;
+                                
+                                // Apply background color based on value
+                                const power = Math.log2(value);
+                                const hue = 30 - power * 5;
+                                const lightness = 90 - power * 5;
+                                tile.style.backgroundColor = `hsl(${hue}, 80%, ${lightness}%)`;
+                                
+                                // Adjust text color for readability
+                                tile.style.color = power > 5 ? '#f9f6f2' : '#776e65';
+                                
+                                // Adjust font size for larger numbers
+                                if (value >= 1000) {
+                                    tile.style.fontSize = 'clamp(12px, 4vw, 30px)';
+                                } else if (value >= 100) {
+                                    tile.style.fontSize = 'clamp(14px, 4.5vw, 35px)';
+                                } else {
+                                    tile.style.fontSize = 'clamp(16px, 5vw, 40px)';
+                                }
+                            } else {
+                                // Image-based tiles
+                                const img = document.createElement('img');
+                                img.src = this.tileImages[value];
+                                img.alt = value.toString();
+                                tile.appendChild(img);
+                            }
+                        } else {
+                            tile.style.backgroundColor = '#cdc1b4';
                         }
                     }
                 }
@@ -217,6 +256,13 @@
                     this.score += scoreIncrease;
                     this.addRandomTile();
                     this.updateDisplay();
+                    
+                    // Check for game over
+                    if (this.isGameOver()) {
+                        setTimeout(() => {
+                            alert(`Game Over! Your score: ${this.score}`);
+                        }, 300);
+                    }
                 }
             }
 
@@ -235,6 +281,39 @@
                 while (result.length < 4) result.push(0);
                 return [result, points];
             }
+            
+            isGameOver() {
+                // Check if grid is full
+                let emptyCells = false;
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        if (this.grid[i][j] === 0) {
+                            emptyCells = true;
+                        }
+                    }
+                }
+                
+                if (emptyCells) return false;
+                
+                // Check if any moves are possible
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        if (this.grid[i][j] === this.grid[i][j + 1]) {
+                            return false;
+                        }
+                    }
+                }
+                
+                for (let j = 0; j < 4; j++) {
+                    for (let i = 0; i < 3; i++) {
+                        if (this.grid[i][j] === this.grid[i + 1][j]) {
+                            return false;
+                        }
+                    }
+                }
+                
+                return true;
+            }
 
             setupControls() {
                 let startX = 0;
@@ -242,6 +321,11 @@
                 let endX = 0;
                 let endY = 0;
                 let isDragging = false;
+
+                // Prevent scrolling when swiping within the game container
+                this.gridElement.addEventListener('touchmove', e => {
+                    e.preventDefault();
+                }, { passive: false });
 
                 document.addEventListener('mousedown', e => {
                     startX = e.clientX;
@@ -276,10 +360,22 @@
 
                 document.addEventListener('keydown', e => {
                     switch(e.key) {
-                        case 'ArrowUp': this.move('up'); break;
-                        case 'ArrowDown': this.move('down'); break;
-                        case 'ArrowLeft': this.move('left'); break;
-                        case 'ArrowRight': this.move('right'); break;
+                        case 'ArrowUp': 
+                            e.preventDefault();
+                            this.move('up'); 
+                            break;
+                        case 'ArrowDown': 
+                            e.preventDefault();
+                            this.move('down'); 
+                            break;
+                        case 'ArrowLeft': 
+                            e.preventDefault();
+                            this.move('left'); 
+                            break;
+                        case 'ArrowRight': 
+                            e.preventDefault();
+                            this.move('right'); 
+                            break;
                     }
                 });
             }
@@ -287,7 +383,9 @@
             handleSwipe(startX, startY, endX, endY) {
                 const diffX = endX - startX;
                 const diffY = endY - startY;
-                const minDistance = 30;
+                
+                // Adjust minimum distance based on screen size
+                const minDistance = Math.min(window.innerWidth, window.innerHeight) * 0.05;
 
                 if (Math.abs(diffX) > Math.abs(diffY)) {
                     if (diffX > minDistance) this.move('right');
@@ -299,7 +397,10 @@
             }
         }
 
-        const game = new Game2048();
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const game = new Game2048();
+        });
     </script>
 </body>
 </html>
