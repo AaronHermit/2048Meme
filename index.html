@@ -1,665 +1,845 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>2048 MEME EDITION</title>
     <style>
-        @font-face {
-            font-family: 'Impact';
-            src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/impact.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-        }
+      @font-face {
+        font-family: "Impact";
+        src: url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/impact.woff2")
+          format("woff2");
+        font-weight: normal;
+        font-style: normal;
+      }
 
-        body {
-            font-family: 'Impact', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #faf8ef;
-            background-image: url('https://cdnjs.cloudflare.com/ajax/libs/noise-generator/1.0.0/background-noise.png');
-            user-select: none;
-            overflow: hidden;
-        }
+      body {
+        font-family: "Impact", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background: linear-gradient(to bottom right, #9933ff, #6600cc);
+        /* background-image: url("https://cdnjs.cloudflare.com/ajax/libs/noise-generator/1.0.0/background-noise.png"); */
+        user-select: none;
+        overflow: hidden;
+      }
 
+      .game-container {
+  background: linear-gradient(to bottom right, #9933ff, #6600cc);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  width: 95%;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .title {
+        font-size: clamp(24px, 7vw, 32px);
+        font-weight: bold;
+        color: #000000;
+        text-shadow: 2px 2px 0px #f9f6f2;
+        /* transform: rotate(-2deg); */
+        letter-spacing: 1px;
+      }
+
+      .score-container {
+        background-color: #000000;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 5px;
+        font-size: clamp(16px, 5vw, 20px);
+        font-weight: bold;
+        text-shadow: 1px 1px 0px #000;
+        /* transform: rotate(2deg); */
+        letter-spacing: 1px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-gap: 2%;
+        background: linear-gradient(to bottom right, #9933ff, #6600cc);
+        width: 100%;
+        aspect-ratio: 1/1;
+        position: relative;
+      }
+
+      .grid-cell {
+        width: 100%;
+        aspect-ratio: 1/1;
+        background-color: #9933ff;
+        border-radius: 5px;
+        position: relative;
+      }
+
+      .tile {
+        width: 100%;
+        aspect-ratio: 1/1;
+        background-color: #cdc1b4;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: clamp(16px, 5vw, 40px);
+        font-family: "Impact", sans-serif;
+        letter-spacing: 1px;
+        transition: all 0.15s ease-in-out; /* Shortened transition time for smoother feel */
+        position: absolute; /* Change to absolute for smooth sliding */
+        overflow: hidden;
+        box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .tile:not(:empty) {
+        background-color: #eee4da;
+      }
+
+      .tile.merged {
+        animation: pop 0.3s ease-in-out;
+      }
+
+      /* Modify the merged animation for smoother effect */
+      @keyframes pop {
+        0% {
+          transform: scale(0.95);
+        }
+        40% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .tile img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 5px;
+        transform: scale(0.95);
+        transition: all 0.2s;
+      }
+
+      .tile.merged img {
+        animation: imgPop 0.3s ease-in-out;
+      }
+
+      @keyframes imgPop {
+        0% {
+          transform: scale(0.95);
+        }
+        40% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(0.95);
+        }
+      }
+
+      .controls-info {
+        margin-top: 15px;
+        font-size: clamp(12px, 3vw, 16px);
+        color: #000000;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .restart-btn {
+        background-color: #000000;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 15px;
+        font-size: clamp(14px, 4vw, 18px);
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        font-family: "Impact", sans-serif;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: all 0.2s;
+      }
+
+      .restart-btn:hover {
+        background-color: #9f8a76;
+        transform: scale(1.05);
+      }
+
+      .game-over-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(238, 228, 218, 0.73);
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        display: none;
+      }
+
+      .game-over-message {
+        font-size: clamp(24px, 8vw, 40px);
+        font-weight: bold;
+        color: #776e65;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 0px #f9f6f2;
+        transform: rotate(-5deg);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .floating-meme {
+        position: absolute;
+        z-index: -1;
+        opacity: 0.2;
+        pointer-events: none;
+        animation: float 15s infinite linear;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translate(-100px, -100px) rotate(0deg);
+        }
+        100% {
+          transform: translate(100vw, 100vh) rotate(360deg);
+        }
+      }
+
+      .wow-effect {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: clamp(30px, 10vw, 60px);
+        font-weight: bold;
+        color: #f65e3b;
+        text-shadow: 2px 2px 0px #fff, -2px -2px 0px #000;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 5;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .wow-animation {
+        animation: wow 0.6s ease-out;
+      }
+
+      @keyframes wow {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(0.5);
+        }
+        50% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.2);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(1.5);
+        }
+      }
+
+      @media (max-height: 600px) {
         .game-container {
-            background-color: #bbada0;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            width: 95%;
-            max-width: 500px;
-            margin: 0 auto;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            position: relative;
-            z-index: 1;
+          padding: 10px;
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .title {
-            font-size: clamp(24px, 7vw, 32px);
-            font-weight: bold;
-            color: #776e65;
-            text-shadow: 2px 2px 0px #f9f6f2;
-            transform: rotate(-2deg);
-            letter-spacing: 1px;
-        }
-
-        .score-container {
-            background-color: #8f7a66;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 5px;
-            font-size: clamp(16px, 5vw, 20px);
-            font-weight: bold;
-            text-shadow: 1px 1px 0px #000;
-            transform: rotate(2deg);
-            letter-spacing: 1px;
+          margin-bottom: 10px;
         }
 
         .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-gap: 2%;
-            background-color: #bbada0;
-            width: 100%;
-            aspect-ratio: 1/1;
-            position: relative;
+          grid-gap: 1.5%;
+        }
+      }
+
+      @media (max-width: 350px) {
+        .game-container {
+          padding: 8px;
         }
 
-        .tile {
-            width: 100%;
-            aspect-ratio: 1/1;
-            background-color: #cdc1b4;
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: clamp(16px, 5vw, 40px);
-            font-family: 'Impact', sans-serif;
-            letter-spacing: 1px;
-            transition: all 0.2s ease-in-out;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
+        .grid {
+          grid-gap: 1%;
         }
-
-        .tile:not(:empty) {
-            background-color: #eee4da;
-        }
-
-        .tile.merged {
-            animation: pop 0.3s ease-in-out;
-        }
-
-        @keyframes pop {
-            0% { transform: scale(0.95); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(0.95); }
-        }
-
-        .tile img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 5px;
-            transform: scale(0.95);
-            transition: all 0.2s;
-        }
-
-        .tile.merged img {
-            animation: imgPop 0.3s ease-in-out;
-        }
-
-        @keyframes imgPop {
-            0% { transform: scale(0.95); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(0.95); }
-        }
-
-        .controls-info {
-            margin-top: 15px;
-            font-size: clamp(12px, 3vw, 16px);
-            color: #776e65;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .restart-btn {
-            background-color: #8f7a66;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 15px;
-            font-size: clamp(14px, 4vw, 18px);
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            font-family: 'Impact', sans-serif;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: all 0.2s;
-        }
-
-        .restart-btn:hover {
-            background-color: #9f8a76;
-            transform: scale(1.05);
-        }
-
-        .game-over-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(238, 228, 218, 0.73);
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            display: none;
-        }
-
-        .game-over-message {
-            font-size: clamp(24px, 8vw, 40px);
-            font-weight: bold;
-            color: #776e65;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 0px #f9f6f2;
-            transform: rotate(-5deg);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .floating-meme {
-            position: absolute;
-            z-index: -1;
-            opacity: 0.2;
-            pointer-events: none;
-            animation: float 15s infinite linear;
-        }
-
-        @keyframes float {
-            0% { transform: translate(-100px, -100px) rotate(0deg); }
-            100% { transform: translate(100vw, 100vh) rotate(360deg); }
-        }
-
-        .wow-effect {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: clamp(30px, 10vw, 60px);
-            font-weight: bold;
-            color: #f65e3b;
-            text-shadow: 2px 2px 0px #fff, -2px -2px 0px #000;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 5;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .wow-animation {
-            animation: wow 0.6s ease-out;
-        }
-
-        @keyframes wow {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
-            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
-        }
-
-        @media (max-height: 600px) {
-            .game-container {
-                padding: 10px;
-            }
-            
-            .header {
-                margin-bottom: 10px;
-            }
-            
-            .grid {
-                grid-gap: 1.5%;
-            }
-        }
-
-        @media (max-width: 350px) {
-            .game-container {
-                padding: 8px;
-            }
-            
-            .grid {
-                grid-gap: 1%;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="game-container">
-        <div class="header">
-            <div class="title">2048 MEME</div>
-            <div class="score-container" id="score">0</div>
-        </div>
-        <div class="grid" id="gameGrid"></div>
-        <div class="controls-info">Use arrow keys or swipe to play</div>
-        <button class="restart-btn" id="restartBtn">Restart Game</button>
-        
-        <div class="game-over-overlay" id="gameOverOverlay">
-            <div class="game-over-message">GAME OVER!</div>
-            <div class="score-container" id="finalScore">Score: 0</div>
-            <button class="restart-btn">Try Again!</button>
-        </div>
-        
-        <div class="wow-effect" id="wowEffect">WOW!</div>
+      <div class="header">
+        <div class="title">2048 MEME</div>
+        <div class="score-container" id="score">0</div>
+      </div>
+      <div class="grid" id="gameGrid"></div>
+      <div class="controls-info">Use arrow keys or swipe to play</div>
+      <button class="restart-btn" id="restartBtn">Restart Game</button>
+
+      <div class="game-over-overlay" id="gameOverOverlay">
+        <div class="game-over-message">GAME OVER!</div>
+        <div class="score-container" id="finalScore">Score: 0</div>
+        <button class="restart-btn">Try Again!</button>
+      </div>
+
+      <div class="wow-effect" id="wowEffect">WOW!</div>
     </div>
 
     <script>
-        class Game2048 {
-            constructor() {
-                this.grid = Array(4).fill().map(() => Array(4).fill(0));
-                this.gridElement = document.getElementById('gameGrid');
-                this.scoreElement = document.getElementById('score');
-                this.finalScoreElement = document.getElementById('finalScore');
-                this.gameOverOverlay = document.getElementById('gameOverOverlay');
-                this.restartBtn = document.getElementById('restartBtn');
-                this.wowEffect = document.getElementById('wowEffect');
-                this.score = 0;
-                this.memeExpressions = ["WOW!", "SUCH MERGE!", "VERY TILES!", "AMAZING!", "SO GOOD!", "EPIC!", "NOICE!"];
-                
-                this.tileImages = {
-                    0: '',
-                    2: 'img/2.png',
-                    4: 'img/4.png',
-                    8: 'img/8.png',
-                    16: 'img/16.png',
-                    32: 'img/32.png',
-                    64: 'img/64.png',
-                    128: 'img/128.png',
-                    256: 'img/256.png',
-                    512: 'img/512.png',
-                    1024: 'img/1024.png',
-                    2048: 'img/2048.png'
-                };
-                
-                // Use images by default
-                this.useTextFallback = false;
-                this.checkImages();
-                
-                this.initGrid();
-                this.addRandomTile();
-                this.addRandomTile();
-                this.updateDisplay();
-                this.setupControls();
-                this.addFloatingMemes();
-                
-                // Setup restart button
-                this.restartBtn.addEventListener('click', () => this.restart());
-                document.querySelector('.game-over-overlay .restart-btn').addEventListener('click', () => this.restart());
-                
-                // Handle orientation changes
-                window.addEventListener('resize', () => {
-                    this.updateDisplay();
-                });
-            }
-            
-            checkImages() {
-                const testImage = new Image();
-                testImage.onerror = () => {
-                    this.useTextFallback = true;
-                    this.updateDisplay();
-                };
-                testImage.src = this.tileImages[2];
-            }
-            
-            restart() {
-                this.grid = Array(4).fill().map(() => Array(4).fill(0));
-                this.score = 0;
-                this.addRandomTile();
-                this.addRandomTile();
-                this.updateDisplay();
-                this.gameOverOverlay.style.display = 'none';
-            }
-            
-            addFloatingMemes() {
-                const memes = ['😂', '🤣', '😎', '🔥', '💯', '👌', '🚀'];
-                for (let i = 0; i < 5; i++) {
-                    const meme = document.createElement('div');
-                    meme.className = 'floating-meme';
-                    meme.textContent = memes[Math.floor(Math.random() * memes.length)];
-                    meme.style.fontSize = `${Math.random() * 30 + 20}px`;
-                    meme.style.left = `${Math.random() * 100}vw`;
-                    meme.style.top = `${Math.random() * 100}vh`;
-                    meme.style.animationDuration = `${Math.random() * 20 + 10}s`;
-                    meme.style.animationDelay = `${Math.random() * 5}s`;
-                    document.body.appendChild(meme);
-                }
-            }
+      class Game2048 {
+        constructor() {
+          this.grid = Array(4)
+            .fill()
+            .map(() => Array(4).fill(0));
+          this.gridElement = document.getElementById("gameGrid");
+          this.scoreElement = document.getElementById("score");
+          this.finalScoreElement = document.getElementById("finalScore");
+          this.gameOverOverlay = document.getElementById("gameOverOverlay");
+          this.restartBtn = document.getElementById("restartBtn");
+          this.wowEffect = document.getElementById("wowEffect");
+          this.score = 0;
+          this.memeExpressions = [
+            "WOW!",
+            "SUCH MERGE!",
+            "VERY TILES!",
+            "AMAZING!",
+            "SO GOOD!",
+            "EPIC!",
+            "NOICE!",
+          ];
 
-            initGrid() {
-                for (let i = 0; i < 4; i++) {
-                    for (let j = 0; j < 4; j++) {
-                        const tile = document.createElement('div');
-                        tile.className = 'tile';
-                        this.gridElement.appendChild(tile);
-                    }
-                }
-            }
+          this.tileImages = {
+            0: "",
+            2: "img/2.png",
+            4: "img/4.png",
+            8: "img/8.png",
+            16: "img/16.png",
+            32: "img/32.png",
+            64: "img/64.png",
+            128: "img/128.png",
+            256: "img/256.png",
+            512: "img/512.png",
+            1024: "img/1024.png",
+            2048: "img/2048.png",
+          };
 
-            updateDisplay() {
-                const tiles = document.querySelectorAll('.tile');
-                for (let i = 0; i < 4; i++) {
-                    for (let j = 0; j < 4; j++) {
-                        const tile = tiles[i * 4 + j];
-                        const value = this.grid[i][j];
-                        tile.innerHTML = '';
-                        
-                        if (value) {
-                            if (this.useTextFallback) {
-                                // Text fallback with meme styling
-                                tile.textContent = value;
-                                
-                                // Apply background color based on value
-                                const power = Math.log2(value);
-                                const hue = (power * 20) % 360;
-                                const lightness = 90 - power * 5;
-                                tile.style.backgroundColor = `hsl(${hue}, 90%, ${lightness}%)`;
-                                
-                                // Adjust text color for readability
-                                tile.style.color = power > 5 ? '#f9f6f2' : '#776e65';
-                                tile.style.textShadow = power > 5 ? '1px 1px 0px #000' : 'none';
-                                
-                                // Adjust font size for larger numbers
-                                if (value >= 1000) {
-                                    tile.style.fontSize = 'clamp(12px, 4vw, 30px)';
-                                } else if (value >= 100) {
-                                    tile.style.fontSize = 'clamp(14px, 4.5vw, 35px)';
-                                } else {
-                                    tile.style.fontSize = 'clamp(16px, 5vw, 40px)';
-                                }
-                                
-                                // Add random rotation for meme effect
-                                tile.style.transform = `scale(0.95) rotate(${(value % 5) - 2}deg)`;
-                            } else {
-                                // Image-based tiles
-                                const img = document.createElement('img');
-                                img.src = this.tileImages[value];
-                                img.alt = value.toString();
-                                
-                                // Add slight random rotation for meme effect
-                                img.style.transform = `scale(0.95) rotate(${(value % 5) - 2}deg)`;
-                                
-                                tile.appendChild(img);
-                            }
-                        } else {
-                            tile.style.backgroundColor = '#cdc1b4';
-                            tile.style.transform = 'scale(1)';
-                        }
-                    }
-                }
-                this.scoreElement.textContent = this.score;
-            }
+          // Use images by default
+          this.useTextFallback = false;
+          this.checkImages();
 
-            addRandomTile() {
-                const emptyCells = [];
-                for (let i = 0; i < 4; i++) {
-                    for (let j = 0; j < 4; j++) {
-                        if (this.grid[i][j] === 0) {
-                            emptyCells.push({i, j});
-                        }
-                    }
-                }
-                if (emptyCells.length > 0) {
-                    const {i, j} = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-                    this.grid[i][j] = Math.random() < 0.9 ? 2 : 4;
-                }
-            }
+          this.initGrid();
+          this.addRandomTile();
+          this.addRandomTile();
+          this.updateDisplay();
+          this.setupControls();
+          this.addFloatingMemes();
 
-            move(direction) {
-                let moved = false;
-                let newGrid = JSON.parse(JSON.stringify(this.grid));
-                let scoreIncrease = 0;
-                let merges = [];
+          // Setup restart button
+          this.restartBtn.addEventListener("click", () => this.restart());
+          document
+            .querySelector(".game-over-overlay .restart-btn")
+            .addEventListener("click", () => this.restart());
 
-                if (direction === 'up' || direction === 'down') {
-                    for (let j = 0; j < 4; j++) {
-                        let column = [];
-                        for (let i = 0; i < 4; i++) {
-                            column.push(newGrid[i][j]);
-                        }
-                        if (direction === 'down') column.reverse();
-                        const [merged, points, mergePositions] = this.merge(column);
-                        scoreIncrease += points;
-                        
-                        // Track merges
-                        if (mergePositions.length > 0) {
-                            for (const pos of mergePositions) {
-                                let actualPos = pos;
-                                if (direction === 'down') actualPos = 3 - pos;
-                                merges.push({i: actualPos, j});
-                            }
-                        }
-                        
-                        if (direction === 'down') merged.reverse();
-                        for (let i = 0; i < 4; i++) {
-                            if (newGrid[i][j] !== merged[i]) moved = true;
-                            newGrid[i][j] = merged[i];
-                        }
-                    }
-                } else {
-                    for (let i = 0; i < 4; i++) {
-                        let row = newGrid[i].slice();
-                        if (direction === 'right') row.reverse();
-                        const [merged, points, mergePositions] = this.merge(row);
-                        scoreIncrease += points;
-                        
-                        // Track merges
-                        if (mergePositions.length > 0) {
-                            for (const pos of mergePositions) {
-                                let actualPos = pos;
-                                if (direction === 'right') actualPos = 3 - pos;
-                                merges.push({i, j: actualPos});
-                            }
-                        }
-                        
-                        if (direction === 'right') merged.reverse();
-                        if (merged.some((val, idx) => val !== newGrid[i][idx])) moved = true;
-                        newGrid[i] = merged;
-                    }
-                }
-
-                if (moved) {
-                    this.grid = newGrid;
-                    this.score += scoreIncrease;
-                    this.addRandomTile();
-                    this.updateDisplay();
-                    
-                    // Apply merge animations
-                    if (merges.length > 0) {
-                        const tiles = document.querySelectorAll('.tile');
-                        for (const {i, j} of merges) {
-                            const tile = tiles[i * 4 + j];
-                            tile.classList.add('merged');
-                            setTimeout(() => {
-                                tile.classList.remove('merged');
-                            }, 300);
-                        }
-                        
-                        // Show WOW effect for big merges
-                        if (scoreIncrease >= 16) {
-                            this.showWowEffect();
-                        }
-                    }
-                    
-                    // Check for game over
-                    if (this.isGameOver()) {
-                        this.showGameOver();
-                    }
-                }
-            }
-            
-            showWowEffect() {
-                const randomExpression = this.memeExpressions[Math.floor(Math.random() * this.memeExpressions.length)];
-                this.wowEffect.textContent = randomExpression;
-                this.wowEffect.classList.remove('wow-animation');
-                // Force reflow
-                void this.wowEffect.offsetWidth;
-                this.wowEffect.classList.add('wow-animation');
-            }
-            
-            showGameOver() {
-                this.finalScoreElement.textContent = `Final Score: ${this.score}`;
-                this.gameOverOverlay.style.display = 'flex';
-            }
-
-            merge(line) {
-                let result = line.filter(x => x);
-                let points = 0;
-                let mergePositions = [];
-                
-                for (let i = 0; i < result.length - 1; i++) {
-                    if (result[i] === result[i + 1]) {
-                        result[i] *= 2;
-                        points += result[i];
-                        mergePositions.push(i);
-                        result[i + 1] = 0;
-                        i++;
-                    }
-                }
-                result = result.filter(x => x);
-                while (result.length < 4) result.push(0);
-                return [result, points, mergePositions];
-            }
-            
-            isGameOver() {
-                // Check if grid is full
-                let emptyCells = false;
-                for (let i = 0; i < 4; i++) {
-                    for (let j = 0; j < 4; j++) {
-                        if (this.grid[i][j] === 0) {
-                            emptyCells = true;
-                        }
-                    }
-                }
-                
-                if (emptyCells) return false;
-                
-                // Check if any moves are possible
-                for (let i = 0; i < 4; i++) {
-                    for (let j = 0; j < 3; j++) {
-                        if (this.grid[i][j] === this.grid[i][j + 1]) {
-                            return false;
-                        }
-                    }
-                }
-                
-                for (let j = 0; j < 4; j++) {
-                    for (let i = 0; i < 3; i++) {
-                        if (this.grid[i][j] === this.grid[i + 1][j]) {
-                            return false;
-                        }
-                    }
-                }
-                
-                return true;
-            }
-
-            setupControls() {
-                let startX = 0;
-                let startY = 0;
-                let endX = 0;
-                let endY = 0;
-                let isDragging = false;
-
-                // Prevent scrolling when swiping within the game container
-                this.gridElement.addEventListener('touchmove', e => {
-                    e.preventDefault();
-                }, { passive: false });
-
-                document.addEventListener('mousedown', e => {
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    isDragging = true;
-                });
-
-                document.addEventListener('mousemove', e => {
-                    if (isDragging) {
-                        endX = e.clientX;
-                        endY = e.clientY;
-                    }
-                });
-
-                document.addEventListener('mouseup', () => {
-                    if (isDragging) {
-                        this.handleSwipe(startX, startY, endX, endY);
-                        isDragging = false;
-                    }
-                });
-
-                document.addEventListener('touchstart', e => {
-                    startX = e.changedTouches[0].screenX;
-                    startY = e.changedTouches[0].screenY;
-                });
-
-                document.addEventListener('touchend', e => {
-                    endX = e.changedTouches[0].screenX;
-                    endY = e.changedTouches[0].screenY;
-                    this.handleSwipe(startX, startY, endX, endY);
-                });
-
-                document.addEventListener('keydown', e => {
-                    switch(e.key) {
-                        case 'ArrowUp': 
-                            e.preventDefault();
-                            this.move('up'); 
-                            break;
-                        case 'ArrowDown': 
-                            e.preventDefault();
-                            this.move('down'); 
-                            break;
-                        case 'ArrowLeft': 
-                            e.preventDefault();
-                            this.move('left'); 
-                            break;
-                        case 'ArrowRight': 
-                            e.preventDefault();
-                            this.move('right'); 
-                            break;
-                    }
-                });
-            }
-
-            handleSwipe(startX, startY, endX, endY) {
-                const diffX = endX - startX;
-                const diffY = endY - startY;
-                
-                // Adjust minimum distance based on screen size
-                const minDistance = Math.min(window.innerWidth, window.innerHeight) * 0.05;
-
-                if (Math.abs(diffX) > Math.abs(diffY)) {
-                    if (diffX > minDistance) this.move('right');
-                    else if (diffX < -minDistance) this.move('left');
-                } else {
-                    if (diffY > minDistance) this.move('down');
-                    else if (diffY < -minDistance) this.move('up');
-                }
-            }
+          // Handle orientation changes
+          window.addEventListener("resize", () => {
+            this.updateDisplay();
+          });
         }
 
-        // Initialize game when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            const game = new Game2048();
-        });
+        checkImages() {
+          const testImage = new Image();
+          testImage.onerror = () => {
+            this.useTextFallback = true;
+            this.updateDisplay();
+          };
+          testImage.src = this.tileImages[2];
+        }
+
+        restart() {
+          this.grid = Array(4)
+            .fill()
+            .map(() => Array(4).fill(0));
+          this.score = 0;
+          this.addRandomTile();
+          this.addRandomTile();
+          this.updateDisplay();
+          this.gameOverOverlay.style.display = "none";
+        }
+
+        addFloatingMemes() {
+          const memes = ["😂", "🤣", "😎", "🔥", "💯", "👌", "🚀"];
+          for (let i = 0; i < 5; i++) {
+            const meme = document.createElement("div");
+            meme.className = "floating-meme";
+            meme.textContent = memes[Math.floor(Math.random() * memes.length)];
+            meme.style.fontSize = `${Math.random() * 30 + 20}px`;
+            meme.style.left = `${Math.random() * 100}vw`;
+            meme.style.top = `${Math.random() * 100}vh`;
+            meme.style.animationDuration = `${Math.random() * 20 + 10}s`;
+            meme.style.animationDelay = `${Math.random() * 5}s`;
+            document.body.appendChild(meme);
+          }
+        }
+
+        // Replace your initGrid method with this:
+        initGrid() {
+          // First create the background cells
+          for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+              const cell = document.createElement("div");
+              cell.className = "grid-cell";
+              this.gridElement.appendChild(cell);
+            }
+          }
+
+          // Now initialize the tiles array to keep track of DOM elements
+          this.tileElements = Array(4)
+            .fill()
+            .map(() => Array(4).fill(null));
+        }
+
+        // Replace your updateDisplay method with this:
+        updateDisplay() {
+          // Calculate the size of one cell (including gap)
+          const cellSize = this.gridElement.clientWidth / 4;
+          const gap = cellSize * 0.02; // 2% gap
+          const tileSize = cellSize - gap * 2;
+
+          // Remove tiles that are no longer in the grid
+          for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+              const tileElement = this.tileElements[i][j];
+              if (tileElement && this.grid[i][j] === 0) {
+                tileElement.remove();
+                this.tileElements[i][j] = null;
+              }
+            }
+          }
+
+          // Update or create tiles
+          for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+              const value = this.grid[i][j];
+              if (value === 0) continue;
+
+              let tileElement = this.tileElements[i][j];
+
+              // Create new tile if it doesn't exist
+              if (!tileElement) {
+                tileElement = document.createElement("div");
+                tileElement.className = "tile new-tile";
+                this.gridElement.appendChild(tileElement);
+                this.tileElements[i][j] = tileElement;
+
+                // Start with a scale animation for new tiles
+                tileElement.style.transform = "scale(0.1)";
+                setTimeout(() => {
+                  tileElement.style.transform = "scale(1)";
+                }, 10);
+              }
+
+              // Position the tile
+              const x = j * cellSize + gap;
+              const y = i * cellSize + gap;
+              tileElement.style.width = `${tileSize}px`;
+              tileElement.style.height = `${tileSize}px`;
+              tileElement.style.left = `${x}px`;
+              tileElement.style.top = `${y}px`;
+
+              // Update content
+              if (this.useTextFallback) {
+                // Text fallback with meme styling
+                tileElement.textContent = value;
+
+                // Apply background color based on value
+                const power = Math.log2(value);
+                const hue = (power * 20) % 360;
+                const lightness = 90 - power * 5;
+                tileElement.style.backgroundColor = `hsl(${hue}, 90%, ${lightness}%)`;
+
+                // Adjust text color for readability
+                tileElement.style.color = power > 5 ? "#f9f6f2" : "#776e65";
+                tileElement.style.textShadow =
+                  power > 5 ? "1px 1px 0px #000" : "none";
+
+                // Adjust font size for larger numbers
+                if (value >= 1000) {
+                  tileElement.style.fontSize = "clamp(12px, 4vw, 30px)";
+                } else if (value >= 100) {
+                  tileElement.style.fontSize = "clamp(14px, 4.5vw, 35px)";
+                } else {
+                  tileElement.style.fontSize = "clamp(16px, 5vw, 40px)";
+                }
+
+                // Clear any previous images
+                tileElement.innerHTML = "";
+              } else {
+                // Image-based tiles
+                if (!tileElement.querySelector("img")) {
+                  tileElement.innerHTML = "";
+                  const img = document.createElement("img");
+                  img.src = this.tileImages[value];
+                  img.alt = value.toString();
+                  tileElement.appendChild(img);
+                } else if (
+                  tileElement.querySelector("img").alt != value.toString()
+                ) {
+                  // Update image if value changed
+                  tileElement.querySelector("img").src = this.tileImages[value];
+                  tileElement.querySelector("img").alt = value.toString();
+                }
+
+                // Add slight random rotation for meme effect
+                tileElement.querySelector(
+                  "img"
+                ).style.transform = `scale(0.95) rotate(${(value % 5) - 2}deg)`;
+              }
+            }
+          }
+
+          this.scoreElement.textContent = this.score;
+        }
+
+        addRandomTile() {
+          const emptyCells = [];
+          for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+              if (this.grid[i][j] === 0) {
+                emptyCells.push({ i, j });
+              }
+            }
+          }
+          if (emptyCells.length > 0) {
+            const { i, j } =
+              emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            this.grid[i][j] = Math.random() < 0.9 ? 2 : 4;
+          }
+        }
+
+        // Add this method to track and animate tile positions during moves
+        move(direction) {
+          let moved = false;
+          let moveMap = []; // To track where tiles move from/to
+          let newGrid = JSON.parse(JSON.stringify(this.grid));
+          let scoreIncrease = 0;
+          let merges = [];
+
+          // First, create a map of current positions
+          let initialPositions = {};
+          for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+              if (this.grid[i][j] !== 0) {
+                initialPositions[`${i}-${j}`] = {
+                  value: this.grid[i][j],
+                  i,
+                  j,
+                };
+              }
+            }
+          }
+
+          if (direction === "up" || direction === "down") {
+            for (let j = 0; j < 4; j++) {
+              let column = [];
+              for (let i = 0; i < 4; i++) {
+                column.push(newGrid[i][j]);
+              }
+              if (direction === "down") column.reverse();
+              const [merged, points, mergePositions] = this.merge(column);
+              scoreIncrease += points;
+
+              // Track merges
+              if (mergePositions.length > 0) {
+                for (const pos of mergePositions) {
+                  let actualPos = pos;
+                  if (direction === "down") actualPos = 3 - pos;
+                  merges.push({ i: actualPos, j });
+                }
+              }
+
+              if (direction === "down") merged.reverse();
+              for (let i = 0; i < 4; i++) {
+                if (newGrid[i][j] !== merged[i]) moved = true;
+                newGrid[i][j] = merged[i];
+              }
+            }
+          } else {
+            for (let i = 0; i < 4; i++) {
+              let row = newGrid[i].slice();
+              if (direction === "right") row.reverse();
+              const [merged, points, mergePositions] = this.merge(row);
+              scoreIncrease += points;
+
+              // Track merges
+              if (mergePositions.length > 0) {
+                for (const pos of mergePositions) {
+                  let actualPos = pos;
+                  if (direction === "right") actualPos = 3 - pos;
+                  merges.push({ i, j: actualPos });
+                }
+              }
+
+              if (direction === "right") merged.reverse();
+              if (merged.some((val, idx) => val !== newGrid[i][idx]))
+                moved = true;
+              newGrid[i] = merged;
+            }
+          }
+
+          // Find where tiles moved to
+          if (moved) {
+            // Move tiles in the DOM first, then update the grid
+            let movedTileElements = {};
+
+            // Store the original tile elements before moving
+            for (let i = 0; i < 4; i++) {
+              for (let j = 0; j < 4; j++) {
+                if (this.tileElements[i][j]) {
+                  movedTileElements[`${i}-${j}`] = this.tileElements[i][j];
+                  this.tileElements[i][j] = null;
+                }
+              }
+            }
+
+            // Find new positions
+            for (let i = 0; i < 4; i++) {
+              for (let j = 0; j < 4; j++) {
+                if (newGrid[i][j] !== 0) {
+                  // Try to find where this tile came from
+                  let found = false;
+
+                  // First look for matching value in initial positions
+                  for (const key in initialPositions) {
+                    const { value, i: oldI, j: oldJ } = initialPositions[key];
+                    // If we found a matching value tile that hasn't been reassigned yet
+                    if (
+                      value === newGrid[i][j] &&
+                      movedTileElements[`${oldI}-${oldJ}`]
+                    ) {
+                      this.tileElements[i][j] =
+                        movedTileElements[`${oldI}-${oldJ}`];
+                      delete movedTileElements[`${oldI}-${oldJ}`];
+                      found = true;
+                      break;
+                    }
+                  }
+
+                  // If no matching tile found (like for newly merged tiles), they'll be created in updateDisplay
+                }
+              }
+            }
+
+            // Update and animate
+            this.grid = newGrid;
+            this.score += scoreIncrease;
+            this.updateDisplay();
+
+            // Add random tile after a slight delay for smoothness
+            setTimeout(() => {
+              this.addRandomTile();
+              this.updateDisplay();
+
+              // Apply merge animations
+              if (merges.length > 0) {
+                for (const { i, j } of merges) {
+                  if (this.tileElements[i][j]) {
+                    this.tileElements[i][j].classList.add("merged");
+                    setTimeout(() => {
+                      if (this.tileElements[i][j]) {
+                        this.tileElements[i][j].classList.remove("merged");
+                      }
+                    }, 300);
+                  }
+                }
+
+                // Show WOW effect for big merges
+                if (scoreIncrease >= 16) {
+                  this.showWowEffect();
+                }
+              }
+
+              // Check for game over
+              if (this.isGameOver()) {
+                this.showGameOver();
+              }
+            }, 150);
+          }
+        }
+
+        showWowEffect() {
+          const randomExpression =
+            this.memeExpressions[
+              Math.floor(Math.random() * this.memeExpressions.length)
+            ];
+          this.wowEffect.textContent = randomExpression;
+          this.wowEffect.classList.remove("wow-animation");
+          // Force reflow
+          void this.wowEffect.offsetWidth;
+          this.wowEffect.classList.add("wow-animation");
+        }
+
+        showGameOver() {
+          this.finalScoreElement.textContent = `Final Score: ${this.score}`;
+          this.gameOverOverlay.style.display = "flex";
+        }
+
+        merge(line) {
+          let result = line.filter((x) => x);
+          let points = 0;
+          let mergePositions = [];
+
+          for (let i = 0; i < result.length - 1; i++) {
+            if (result[i] === result[i + 1]) {
+              result[i] *= 2;
+              points += result[i];
+              mergePositions.push(i);
+              result[i + 1] = 0;
+              i++;
+            }
+          }
+          result = result.filter((x) => x);
+          while (result.length < 4) result.push(0);
+          return [result, points, mergePositions];
+        }
+
+        isGameOver() {
+          // Check if grid is full
+          let emptyCells = false;
+          for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+              if (this.grid[i][j] === 0) {
+                emptyCells = true;
+              }
+            }
+          }
+
+          if (emptyCells) return false;
+
+          // Check if any moves are possible
+          for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 3; j++) {
+              if (this.grid[i][j] === this.grid[i][j + 1]) {
+                return false;
+              }
+            }
+          }
+
+          for (let j = 0; j < 4; j++) {
+            for (let i = 0; i < 3; i++) {
+              if (this.grid[i][j] === this.grid[i + 1][j]) {
+                return false;
+              }
+            }
+          }
+
+          return true;
+        }
+
+        setupControls() {
+          let startX = 0;
+          let startY = 0;
+          let endX = 0;
+          let endY = 0;
+          let isDragging = false;
+
+          // Prevent scrolling when swiping within the game container
+          this.gridElement.addEventListener(
+            "touchmove",
+            (e) => {
+              e.preventDefault();
+            },
+            { passive: false }
+          );
+
+          document.addEventListener("mousedown", (e) => {
+            startX = e.clientX;
+            startY = e.clientY;
+            isDragging = true;
+          });
+
+          document.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+              endX = e.clientX;
+              endY = e.clientY;
+            }
+          });
+
+          document.addEventListener("mouseup", () => {
+            if (isDragging) {
+              this.handleSwipe(startX, startY, endX, endY);
+              isDragging = false;
+            }
+          });
+
+          document.addEventListener("touchstart", (e) => {
+            startX = e.changedTouches[0].screenX;
+            startY = e.changedTouches[0].screenY;
+          });
+
+          document.addEventListener("touchend", (e) => {
+            endX = e.changedTouches[0].screenX;
+            endY = e.changedTouches[0].screenY;
+            this.handleSwipe(startX, startY, endX, endY);
+          });
+
+          document.addEventListener("keydown", (e) => {
+            switch (e.key) {
+              case "ArrowUp":
+                e.preventDefault();
+                this.move("up");
+                break;
+              case "ArrowDown":
+                e.preventDefault();
+                this.move("down");
+                break;
+              case "ArrowLeft":
+                e.preventDefault();
+                this.move("left");
+                break;
+              case "ArrowRight":
+                e.preventDefault();
+                this.move("right");
+                break;
+            }
+          });
+        }
+
+        handleSwipe(startX, startY, endX, endY) {
+          const diffX = endX - startX;
+          const diffY = endY - startY;
+
+          // Adjust minimum distance based on screen size
+          const minDistance =
+            Math.min(window.innerWidth, window.innerHeight) * 0.05;
+
+          if (Math.abs(diffX) > Math.abs(diffY)) {
+            if (diffX > minDistance) this.move("right");
+            else if (diffX < -minDistance) this.move("left");
+          } else {
+            if (diffY > minDistance) this.move("down");
+            else if (diffY < -minDistance) this.move("up");
+          }
+        }
+      }
+
+      // Initialize game when page loads
+      document.addEventListener("DOMContentLoaded", () => {
+        const game = new Game2048();
+      });
     </script>
-</body>
+  </body>
 </html>
