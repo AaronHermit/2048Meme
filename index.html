@@ -21,23 +21,22 @@
         height: 100vh;
         margin: 0;
         background: linear-gradient(to bottom right, #9933ff, #6600cc);
-        /* background-image: url("https://cdnjs.cloudflare.com/ajax/libs/noise-generator/1.0.0/background-noise.png"); */
         user-select: none;
         overflow: hidden;
       }
 
       .game-container {
-  background: linear-gradient(to bottom right, #9933ff, #6600cc);
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
-  width: 95%;
-  max-width: 500px;
-  margin: 0 auto;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-  position: relative;
-  z-index: 1;
-}
+        background: linear-gradient(to bottom right, #9933ff, #6600cc);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        width: 95%;
+        max-width: 500px;
+        margin: 0 auto;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 1;
+      }
 
       .header {
         display: flex;
@@ -51,7 +50,6 @@
         font-weight: bold;
         color: #000000;
         text-shadow: 2px 2px 0px #f9f6f2;
-        /* transform: rotate(-2deg); */
         letter-spacing: 1px;
       }
 
@@ -63,7 +61,6 @@
         font-size: clamp(16px, 5vw, 20px);
         font-weight: bold;
         text-shadow: 1px 1px 0px #000;
-        /* transform: rotate(2deg); */
         letter-spacing: 1px;
       }
 
@@ -96,8 +93,8 @@
         font-size: clamp(16px, 5vw, 40px);
         font-family: "Impact", sans-serif;
         letter-spacing: 1px;
-        transition: all 0.15s ease-in-out; /* Shortened transition time for smoother feel */
-        position: absolute; /* Change to absolute for smooth sliding */
+        transition: all 0.15s ease-in-out;
+        position: absolute;
         overflow: hidden;
         box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
       }
@@ -110,17 +107,10 @@
         animation: pop 0.3s ease-in-out;
       }
 
-      /* Modify the merged animation for smoother effect */
       @keyframes pop {
-        0% {
-          transform: scale(0.95);
-        }
-        40% {
-          transform: scale(1.1);
-        }
-        100% {
-          transform: scale(1);
-        }
+        0% { transform: scale(0.95); }
+        40% { transform: scale(1.1); }
+        100% { transform: scale(1); }
       }
 
       .tile img {
@@ -137,15 +127,9 @@
       }
 
       @keyframes imgPop {
-        0% {
-          transform: scale(0.95);
-        }
-        40% {
-          transform: scale(1.1);
-        }
-        100% {
-          transform: scale(0.95);
-        }
+        0% { transform: scale(0.95); }
+        40% { transform: scale(1.1); }
+        100% { transform: scale(0.95); }
       }
 
       .controls-info {
@@ -212,12 +196,8 @@
       }
 
       @keyframes float {
-        0% {
-          transform: translate(-100px, -100px) rotate(0deg);
-        }
-        100% {
-          transform: translate(100vw, 100vh) rotate(360deg);
-        }
+        0% { transform: translate(-100px, -100px) rotate(0deg); }
+        100% { transform: translate(100vw, 100vh) rotate(360deg); }
       }
 
       .wow-effect {
@@ -241,42 +221,20 @@
       }
 
       @keyframes wow {
-        0% {
-          opacity: 1;
-          transform: translate(-50%, -50%) scale(0.5);
-        }
-        50% {
-          opacity: 1;
-          transform: translate(-50%, -50%) scale(1.2);
-        }
-        100% {
-          opacity: 0;
-          transform: translate(-50%, -50%) scale(1.5);
-        }
+        0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+        50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
       }
 
       @media (max-height: 600px) {
-        .game-container {
-          padding: 10px;
-        }
-
-        .header {
-          margin-bottom: 10px;
-        }
-
-        .grid {
-          grid-gap: 1.5%;
-        }
+        .game-container { padding: 10px; }
+        .header { margin-bottom: 10px; }
+        .grid { grid-gap: 1.5%; }
       }
 
       @media (max-width: 350px) {
-        .game-container {
-          padding: 8px;
-        }
-
-        .grid {
-          grid-gap: 1%;
-        }
+        .game-container { padding: 8px; }
+        .grid { grid-gap: 1%; }
       }
     </style>
   </head>
@@ -302,9 +260,7 @@
     <script>
       class Game2048 {
         constructor() {
-          this.grid = Array(4)
-            .fill()
-            .map(() => Array(4).fill(0));
+          this.grid = Array(4).fill().map(() => Array(4).fill(0));
           this.gridElement = document.getElementById("gameGrid");
           this.scoreElement = document.getElementById("score");
           this.finalScoreElement = document.getElementById("finalScore");
@@ -337,7 +293,6 @@
             2048: "img/2048.png",
           };
 
-          // Use images by default
           this.useTextFallback = false;
           this.checkImages();
 
@@ -347,17 +302,6 @@
           this.updateDisplay();
           this.setupControls();
           this.addFloatingMemes();
-
-          // Setup restart button
-          this.restartBtn.addEventListener("click", () => this.restart());
-          document
-            .querySelector(".game-over-overlay .restart-btn")
-            .addEventListener("click", () => this.restart());
-
-          // Handle orientation changes
-          window.addEventListener("resize", () => {
-            this.updateDisplay();
-          });
         }
 
         checkImages() {
@@ -370,14 +314,20 @@
         }
 
         restart() {
-          this.grid = Array(4)
-            .fill()
-            .map(() => Array(4).fill(0));
+          while (this.gridElement.firstChild) {
+            this.gridElement.removeChild(this.gridElement.firstChild);
+          }
+          
+          this.tileElements = Array(4).fill().map(() => Array(4).fill(null));
+          this.grid = Array(4).fill().map(() => Array(4).fill(0));
           this.score = 0;
+          
+          this.initGrid();
           this.addRandomTile();
           this.addRandomTile();
-          this.updateDisplay();
+          
           this.gameOverOverlay.style.display = "none";
+          setTimeout(() => this.updateDisplay(), 50);
         }
 
         addFloatingMemes() {
@@ -395,9 +345,7 @@
           }
         }
 
-        // Replace your initGrid method with this:
         initGrid() {
-          // First create the background cells
           for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
               const cell = document.createElement("div");
@@ -405,21 +353,14 @@
               this.gridElement.appendChild(cell);
             }
           }
-
-          // Now initialize the tiles array to keep track of DOM elements
-          this.tileElements = Array(4)
-            .fill()
-            .map(() => Array(4).fill(null));
+          this.tileElements = Array(4).fill().map(() => Array(4).fill(null));
         }
 
-        // Replace your updateDisplay method with this:
         updateDisplay() {
-          // Calculate the size of one cell (including gap)
           const cellSize = this.gridElement.clientWidth / 4;
-          const gap = cellSize * 0.02; // 2% gap
+          const gap = cellSize * 0.02;
           const tileSize = cellSize - gap * 2;
 
-          // Remove tiles that are no longer in the grid
           for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
               const tileElement = this.tileElements[i][j];
@@ -430,7 +371,6 @@
             }
           }
 
-          // Update or create tiles
           for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
               const value = this.grid[i][j];
@@ -438,21 +378,17 @@
 
               let tileElement = this.tileElements[i][j];
 
-              // Create new tile if it doesn't exist
               if (!tileElement) {
                 tileElement = document.createElement("div");
                 tileElement.className = "tile new-tile";
                 this.gridElement.appendChild(tileElement);
                 this.tileElements[i][j] = tileElement;
-
-                // Start with a scale animation for new tiles
                 tileElement.style.transform = "scale(0.1)";
                 setTimeout(() => {
                   tileElement.style.transform = "scale(1)";
                 }, 10);
               }
 
-              // Position the tile
               const x = j * cellSize + gap;
               const y = i * cellSize + gap;
               tileElement.style.width = `${tileSize}px`;
@@ -460,23 +396,14 @@
               tileElement.style.left = `${x}px`;
               tileElement.style.top = `${y}px`;
 
-              // Update content
               if (this.useTextFallback) {
-                // Text fallback with meme styling
                 tileElement.textContent = value;
-
-                // Apply background color based on value
                 const power = Math.log2(value);
                 const hue = (power * 20) % 360;
                 const lightness = 90 - power * 5;
                 tileElement.style.backgroundColor = `hsl(${hue}, 90%, ${lightness}%)`;
-
-                // Adjust text color for readability
                 tileElement.style.color = power > 5 ? "#f9f6f2" : "#776e65";
-                tileElement.style.textShadow =
-                  power > 5 ? "1px 1px 0px #000" : "none";
-
-                // Adjust font size for larger numbers
+                tileElement.style.textShadow = power > 5 ? "1px 1px 0px #000" : "none";
                 if (value >= 1000) {
                   tileElement.style.fontSize = "clamp(12px, 4vw, 30px)";
                 } else if (value >= 100) {
@@ -484,29 +411,19 @@
                 } else {
                   tileElement.style.fontSize = "clamp(16px, 5vw, 40px)";
                 }
-
-                // Clear any previous images
-                tileElement.innerHTML = "";
+                tileElement.innerHTML = value;
               } else {
-                // Image-based tiles
                 if (!tileElement.querySelector("img")) {
                   tileElement.innerHTML = "";
                   const img = document.createElement("img");
                   img.src = this.tileImages[value];
                   img.alt = value.toString();
                   tileElement.appendChild(img);
-                } else if (
-                  tileElement.querySelector("img").alt != value.toString()
-                ) {
-                  // Update image if value changed
+                } else if (tileElement.querySelector("img").alt != value.toString()) {
                   tileElement.querySelector("img").src = this.tileImages[value];
                   tileElement.querySelector("img").alt = value.toString();
                 }
-
-                // Add slight random rotation for meme effect
-                tileElement.querySelector(
-                  "img"
-                ).style.transform = `scale(0.95) rotate(${(value % 5) - 2}deg)`;
+                tileElement.querySelector("img").style.transform = `scale(0.95) rotate(${(value % 5) - 2}deg)`;
               }
             }
           }
@@ -524,30 +441,22 @@
             }
           }
           if (emptyCells.length > 0) {
-            const { i, j } =
-              emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            const { i, j } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
             this.grid[i][j] = Math.random() < 0.9 ? 2 : 4;
           }
         }
 
-        // Add this method to track and animate tile positions during moves
         move(direction) {
           let moved = false;
-          let moveMap = []; // To track where tiles move from/to
           let newGrid = JSON.parse(JSON.stringify(this.grid));
           let scoreIncrease = 0;
           let merges = [];
 
-          // First, create a map of current positions
           let initialPositions = {};
           for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
               if (this.grid[i][j] !== 0) {
-                initialPositions[`${i}-${j}`] = {
-                  value: this.grid[i][j],
-                  i,
-                  j,
-                };
+                initialPositions[`${i}-${j}`] = { value: this.grid[i][j], i, j };
               }
             }
           }
@@ -562,7 +471,6 @@
               const [merged, points, mergePositions] = this.merge(column);
               scoreIncrease += points;
 
-              // Track merges
               if (mergePositions.length > 0) {
                 for (const pos of mergePositions) {
                   let actualPos = pos;
@@ -584,7 +492,6 @@
               const [merged, points, mergePositions] = this.merge(row);
               scoreIncrease += points;
 
-              // Track merges
               if (mergePositions.length > 0) {
                 for (const pos of mergePositions) {
                   let actualPos = pos;
@@ -594,18 +501,13 @@
               }
 
               if (direction === "right") merged.reverse();
-              if (merged.some((val, idx) => val !== newGrid[i][idx]))
-                moved = true;
+              if (merged.some((val, idx) => val !== newGrid[i][idx])) moved = true;
               newGrid[i] = merged;
             }
           }
 
-          // Find where tiles moved to
           if (moved) {
-            // Move tiles in the DOM first, then update the grid
             let movedTileElements = {};
-
-            // Store the original tile elements before moving
             for (let i = 0; i < 4; i++) {
               for (let j = 0; j < 4; j++) {
                 if (this.tileElements[i][j]) {
@@ -615,45 +517,34 @@
               }
             }
 
-            // Find new positions
             for (let i = 0; i < 4; i++) {
               for (let j = 0; j < 4; j++) {
                 if (newGrid[i][j] !== 0) {
-                  // Try to find where this tile came from
                   let found = false;
-
-                  // First look for matching value in initial positions
                   for (const key in initialPositions) {
                     const { value, i: oldI, j: oldJ } = initialPositions[key];
-                    // If we found a matching value tile that hasn't been reassigned yet
                     if (
                       value === newGrid[i][j] &&
                       movedTileElements[`${oldI}-${oldJ}`]
                     ) {
-                      this.tileElements[i][j] =
-                        movedTileElements[`${oldI}-${oldJ}`];
+                      this.tileElements[i][j] = movedTileElements[`${oldI}-${oldJ}`];
                       delete movedTileElements[`${oldI}-${oldJ}`];
                       found = true;
                       break;
                     }
                   }
-
-                  // If no matching tile found (like for newly merged tiles), they'll be created in updateDisplay
                 }
               }
             }
 
-            // Update and animate
             this.grid = newGrid;
             this.score += scoreIncrease;
             this.updateDisplay();
 
-            // Add random tile after a slight delay for smoothness
             setTimeout(() => {
               this.addRandomTile();
               this.updateDisplay();
 
-              // Apply merge animations
               if (merges.length > 0) {
                 for (const { i, j } of merges) {
                   if (this.tileElements[i][j]) {
@@ -666,13 +557,11 @@
                   }
                 }
 
-                // Show WOW effect for big merges
                 if (scoreIncrease >= 16) {
                   this.showWowEffect();
                 }
               }
 
-              // Check for game over
               if (this.isGameOver()) {
                 this.showGameOver();
               }
@@ -681,13 +570,9 @@
         }
 
         showWowEffect() {
-          const randomExpression =
-            this.memeExpressions[
-              Math.floor(Math.random() * this.memeExpressions.length)
-            ];
+          const randomExpression = this.memeExpressions[Math.floor(Math.random() * this.memeExpressions.length)];
           this.wowEffect.textContent = randomExpression;
           this.wowEffect.classList.remove("wow-animation");
-          // Force reflow
           void this.wowEffect.offsetWidth;
           this.wowEffect.classList.add("wow-animation");
         }
@@ -717,7 +602,6 @@
         }
 
         isGameOver() {
-          // Check if grid is full
           let emptyCells = false;
           for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
@@ -729,20 +613,15 @@
 
           if (emptyCells) return false;
 
-          // Check if any moves are possible
           for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 3; j++) {
-              if (this.grid[i][j] === this.grid[i][j + 1]) {
-                return false;
-              }
+              if (this.grid[i][j] === this.grid[i][j + 1]) return false;
             }
           }
 
           for (let j = 0; j < 4; j++) {
             for (let i = 0; i < 3; i++) {
-              if (this.grid[i][j] === this.grid[i + 1][j]) {
-                return false;
-              }
+              if (this.grid[i][j] === this.grid[i + 1][j]) return false;
             }
           }
 
@@ -756,14 +635,12 @@
           let endY = 0;
           let isDragging = false;
 
-          // Prevent scrolling when swiping within the game container
-          this.gridElement.addEventListener(
-            "touchmove",
-            (e) => {
-              e.preventDefault();
-            },
-            { passive: false }
-          );
+          this.gridElement.addEventListener("touchmove", (e) => {
+            e.preventDefault();
+          }, { passive: false });
+
+          this.restartBtn.onclick = () => this.restart();
+          document.querySelector(".game-over-overlay .restart-btn").onclick = () => this.restart();
 
           document.addEventListener("mousedown", (e) => {
             startX = e.clientX;
@@ -816,15 +693,16 @@
                 break;
             }
           });
+
+          window.addEventListener("resize", () => {
+            this.updateDisplay();
+          });
         }
 
         handleSwipe(startX, startY, endX, endY) {
           const diffX = endX - startX;
           const diffY = endY - startY;
-
-          // Adjust minimum distance based on screen size
-          const minDistance =
-            Math.min(window.innerWidth, window.innerHeight) * 0.05;
+          const minDistance = Math.min(window.innerWidth, window.innerHeight) * 0.05;
 
           if (Math.abs(diffX) > Math.abs(diffY)) {
             if (diffX > minDistance) this.move("right");
@@ -836,7 +714,6 @@
         }
       }
 
-      // Initialize game when page loads
       document.addEventListener("DOMContentLoaded", () => {
         const game = new Game2048();
       });
