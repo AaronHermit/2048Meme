@@ -4,7 +4,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f0f0f0;
+    /* background-color: #f0f0f0; */
 }
 
 #game-container {
@@ -32,7 +32,7 @@ body {
     right: 0;
     width: 30px;
     height: 60px;
-    background-color: #666;
+    /* background-color: #666; */
     animation: moveObstacle 2s infinite linear;
 }
 
