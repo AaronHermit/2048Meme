@@ -52,6 +52,12 @@
         .tile:not(:empty) {
             background-color: #eee4da;
         }
+
+        .tile img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body>
@@ -69,17 +75,17 @@
                 this.score = 0;
                 this.tileImages = {
                     0: '',
-                    2: '🐱',
-                    4: '🐶',
-                    8: '🐰',
-                    16: '🦊',
-                    32: '🐻',
-                    64: '🐼',
-                    128: '🐨',
-                    256: '🐯',
-                    512: '🦁',
-                    1024: '🐘',
-                    2048: '🦄'
+                    2: 'img/2.png',
+                    4: 'img/4.png',
+                    8: 'img/8.png',
+                    16: 'img/16.png',
+                    32: 'img/32.png',
+                    64: 'img/64.png',
+                    128: 'img/128.png',
+                    256: 'img/256.png',
+                    512: 'img/512.png',
+                    1024: 'img/1024.png',
+                    2048: 'img/2048.png'
                 };
                 this.initGrid();
                 this.addRandomTile();
@@ -104,7 +110,12 @@
                     for (let j = 0; j < 4; j++) {
                         const tile = tiles[i * 4 + j];
                         const value = this.grid[i][j];
-                        tile.textContent = this.tileImages[value];
+                        tile.innerHTML = '';
+                        if (value) {
+                            const img = document.createElement('img');
+                            img.src = this.tileImages[value];
+                            tile.appendChild(img);
+                        }
                     }
                 }
                 this.scoreElement.textContent = `Score: ${this.score}`;
