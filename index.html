@@ -300,13 +300,20 @@
     </style>
   </head>
   <body>
+    <audio id="swipeSound" src="audio/swipe.mp3"></audio>
+    <audio id="pointSound" src="audio/point.mp3"></audio>
+    <audio id="gameOverSound" src="audio/gameover.mp3"></audio>
+    <audio id="backgroundMusic" src="audio/background.mp3" loop></audio>
     <div class="game-container">
       <div class="header">
         <div class="title">2048 MEMES</div>
         <div class="score-container" id="score">0</div>
       </div>
       <div class="grid" id="gameGrid"></div>
-      <div class="controls-info">Use arrow keys or swipe to play</div>
+      <div class="controls-info">
+        Slide memes to combine matching numbers to create 2048. Don't fill up
+        the board!
+      </div>
       <button class="restart-btn" id="restartBtn">Restart Game</button>
 
       <div class="game-over-overlay" id="gameOverOverlay">
@@ -322,6 +329,22 @@
     <script>
       class Game2048 {
         constructor() {
+          // Audio elements
+          this.swipeSound = document.getElementById("swipeSound");
+          this.pointSound = document.getElementById("pointSound");
+          this.gameOverSound = document.getElementById("gameOverSound");
+          this.backgroundMusic = document.getElementById("backgroundMusic");
+
+          // Audio settings
+          this.backgroundMusic.volume = 0.3; // Lower volume for background
+          this.swipeSound.volume = 0.7;
+          this.pointSound.volume = 0.7;
+          this.gameOverSound.volume = 0.8;
+
+          
+
+          
+
           this.grid = Array(4)
             .fill()
             .map(() => Array(4).fill(0));
@@ -331,7 +354,8 @@
           this.gameOverOverlay = document.getElementById("gameOverOverlay");
           this.restartBtn = document.getElementById("restartBtn");
           this.wowEffect = document.getElementById("wowEffect");
-          this.directionIndicator = document.getElementById("directionIndicator");
+          this.directionIndicator =
+            document.getElementById("directionIndicator");
           this.score = 0;
           this.memeExpressions = [
             "WOW!",
@@ -357,19 +381,22 @@
             1024: "img/1024.png",
             2048: "img/2048.png",
           };
-          
+
           // Direction control images
           this.directionImages = {
             up: "img/up.png",
             down: "img/down.png",
             left: "img/left.png",
-            right: "img/right.png"
+            right: "img/right.png",
           };
 
           // Use images by default
           this.useTextFallback = false;
           this.checkImages();
 
+
+          // Start background music
+          this.playBackgroundMusic();
           this.initGrid();
           this.addRandomTile();
           this.addRandomTile();
@@ -407,6 +434,9 @@
           this.addRandomTile();
           this.updateDisplay();
           this.gameOverOverlay.style.display = "none";
+          // Restart background music
+        this.backgroundMusic.currentTime = 0;
+        this.playBackgroundMusic();
         }
 
         addFloatingMemes() {
@@ -519,13 +549,13 @@
           img.style.width = "100%";
           img.style.height = "100%";
           this.directionIndicator.appendChild(img);
-          
+
           // Remove any existing animation class
           this.directionIndicator.classList.remove("direction-animation");
-          
+
           // Force reflow
           void this.directionIndicator.offsetWidth;
-          
+
           // Add animation class
           this.directionIndicator.classList.add("direction-animation");
         }
@@ -587,7 +617,8 @@
           if (moved) {
             // Show direction indicator
             this.showDirectionIndicator(direction);
-            
+// Play swipe sound
+this.playSwipeSound();
             this.grid = newGrid;
             this.score += scoreIncrease;
             this.addRandomTile();
@@ -604,10 +635,13 @@
                 }, 300);
               }
 
-              // Show WOW effect for big merges
-              if (scoreIncrease >= 16) {
-                this.showWowEffect();
-              }
+              // Play point sound and show WOW effect for big merges
+              if (scoreIncrease > 0) {
+                    this.playPointSound();
+                    if (scoreIncrease >= 16) {
+                        this.showWowEffect();
+                    }
+                }
             }
 
             // Check for game over
@@ -632,6 +666,9 @@
         showGameOver() {
           this.finalScoreElement.textContent = `Final Score: ${this.score}`;
           this.gameOverOverlay.style.display = "flex";
+          // Stop background music and play game over sound
+        this.backgroundMusic.pause();
+        this.playGameOverSound();
         }
 
         merge(line) {
@@ -754,7 +791,32 @@
             }
           });
         }
+// Audio control methods
+playBackgroundMusic() {
+        this.backgroundMusic.play().catch(error => {
+            // Autoplay might be blocked, handle it gracefully
+            console.log("Background music blocked:", error);
+            // Add event listener to start music on first interaction
+            document.addEventListener('click', () => {
+                this.backgroundMusic.play();
+            }, { once: true });
+        });
+    }
 
+    playSwipeSound() {
+        this.swipeSound.currentTime = 0; // Reset to start
+        this.swipeSound.play();
+    }
+
+    playPointSound() {
+        this.pointSound.currentTime = 0;
+        this.pointSound.play();
+    }
+
+    playGameOverSound() {
+        this.gameOverSound.currentTime = 0;
+        this.gameOverSound.play();
+    }
         handleSwipe(startX, startY, endX, endY) {
           const diffX = endX - startX;
           const diffY = endY - startY;
