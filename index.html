@@ -341,10 +341,6 @@
           this.pointSound.volume = 0.7;
           this.gameOverSound.volume = 0.8;
 
-          
-
-          
-
           this.grid = Array(4)
             .fill()
             .map(() => Array(4).fill(0));
@@ -394,7 +390,6 @@
           this.useTextFallback = false;
           this.checkImages();
 
-
           // Start background music
           this.playBackgroundMusic();
           this.initGrid();
@@ -403,7 +398,7 @@
           this.updateDisplay();
           this.setupControls();
           this.addFloatingMemes();
-
+          this.setupMusicAutoplay();
           // Setup restart button
           this.restartBtn.addEventListener("click", () => this.restart());
           document
@@ -435,8 +430,8 @@
           this.updateDisplay();
           this.gameOverOverlay.style.display = "none";
           // Restart background music
-        this.backgroundMusic.currentTime = 0;
-        this.playBackgroundMusic();
+          this.backgroundMusic.currentTime = 0;
+          this.playBackgroundMusic();
         }
 
         addFloatingMemes() {
@@ -617,8 +612,8 @@
           if (moved) {
             // Show direction indicator
             this.showDirectionIndicator(direction);
-// Play swipe sound
-this.playSwipeSound();
+            // Play swipe sound
+            this.playSwipeSound();
             this.grid = newGrid;
             this.score += scoreIncrease;
             this.addRandomTile();
@@ -637,11 +632,11 @@ this.playSwipeSound();
 
               // Play point sound and show WOW effect for big merges
               if (scoreIncrease > 0) {
-                    this.playPointSound();
-                    if (scoreIncrease >= 16) {
-                        this.showWowEffect();
-                    }
+                this.playPointSound();
+                if (scoreIncrease >= 16) {
+                  this.showWowEffect();
                 }
+              }
             }
 
             // Check for game over
@@ -667,8 +662,8 @@ this.playSwipeSound();
           this.finalScoreElement.textContent = `Final Score: ${this.score}`;
           this.gameOverOverlay.style.display = "flex";
           // Stop background music and play game over sound
-        this.backgroundMusic.pause();
-        this.playGameOverSound();
+          this.backgroundMusic.pause();
+          this.playGameOverSound();
         }
 
         merge(line) {
@@ -791,32 +786,46 @@ this.playSwipeSound();
             }
           });
         }
-// Audio control methods
-playBackgroundMusic() {
-        this.backgroundMusic.play().catch(error => {
-            // Autoplay might be blocked, handle it gracefully
-            console.log("Background music blocked:", error);
-            // Add event listener to start music on first interaction
-            document.addEventListener('click', () => {
-                this.backgroundMusic.play();
-            }, { once: true });
-        });
-    }
+        // Audio control methods
+        setupMusicAutoplay() {
+          // Try to play music immediately
+          this.playBackgroundMusic();
 
-    playSwipeSound() {
-        this.swipeSound.currentTime = 0; // Reset to start
-        this.swipeSound.play();
-    }
+          // Add fallback for browsers with strict autoplay policies
+          document.addEventListener(
+            "click",
+            () => {
+              if (this.backgroundMusic.paused) {
+                this.playBackgroundMusic();
+              }
+            },
+            { once: false }
+          );
+        }
 
-    playPointSound() {
-        this.pointSound.currentTime = 0;
-        this.pointSound.play();
-    }
+        playBackgroundMusic() {
+          // Attempt to play with error handling
+          this.backgroundMusic.play().catch((error) => {
+            console.log("Background music autoplay blocked:", error);
+            // Optional: Show a user-friendly message about music
+            console.log("Click anywhere to start music");
+          });
+        }
 
-    playGameOverSound() {
-        this.gameOverSound.currentTime = 0;
-        this.gameOverSound.play();
-    }
+        playSwipeSound() {
+          this.swipeSound.currentTime = 0; // Reset to start
+          this.swipeSound.play();
+        }
+
+        playPointSound() {
+          this.pointSound.currentTime = 0;
+          this.pointSound.play();
+        }
+
+        playGameOverSound() {
+          this.gameOverSound.currentTime = 0;
+          this.gameOverSound.play();
+        }
         handleSwipe(startX, startY, endX, endY) {
           const diffX = endX - startX;
           const diffY = endY - startY;
